@@ -1,20 +1,292 @@
-﻿// kurs.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+using namespace std;
 
-#include <iostream>
+class Character {
+protected:
+    string name;
+    int hp;
+    int attack;
+public:
+    Character(const string& n, int h, int a) : name(n), hp(h), attack(a) {}
 
-int main()
-{
-    std::cout << "Hello World!\n";
+    virtual ~Character() {}
+
+    void takeDamage(int dmg) {
+        hp -= dmg;
+        if (hp < 0) hp = 0;
+        cout << name << " получил " << dmg << " урона! Осталось HP: " << hp << "\n";
+    }
+    bool isAlive() const { return hp > 0; }
+    string getName() const { return name; }
+    int getHP() const { return hp; }
+    int getAttack() const { return attack; }
+    void heal(int amount) {}
+    void printStatus() const {
+        cout << name << hp << " | хп: " << " | дмг: " << attack << "\n";
+    }
+
+    virtual void attackTarget(Character& target) {
+        cout << name << " атакует " << target.getName() << "!\n";
+        target.takeDamage(attack);
+    }
+
+    void increaseAttack(int amount) {
+        cout << name << " атака увеличена на " << amount << "! Текущий урон: " << attack << "\n";
+    }
+};
+
+
+class Player : public Character {
+private:
+    int gold;
+public:
+    vector<string> inventoryItems;
+    Player(const string& n)
+        : Character(n, 100, 15), gold(50) {
+    }
+
+    void gainGold(int amount) {
+        gold += amount;
+        cout << "Вы получили " << amount << " золота. Всего: " << gold << "\n";
+    }
+
+    void spendGold(int amount) {
+        if (gold >= amount) {
+            gold -= amount;
+            cout << "Потрачено " << amount << " золота.\n";
+        }
+        else {
+            cout << "Недостаточно золота!\n";
+        }
+    }
+    int getGold() const { return gold; }
+
+    void showInventory() {
+        cout << "Инвентарь:\n";
+        for (const auto& item : inventoryItems)
+            cout << "- " << item << "\n";
+    }
+    void useHealthPotion() {
+        auto it = find(inventoryItems.begin(), inventoryItems.end(), "Аптечка");
+        if (it != inventoryItems.end()) {
+            hp += 30;
+            if (hp > 100) hp = 100;
+            cout << "Вы использовали аптечку! HP восстановлено до " << hp << "\n";
+            inventoryItems.erase(it);
+        }
+        else {
+            cout << "У вас нет аптечки.\n";
+        }
+    }
+};
+
+class Enemy : public Character {
+public:
+    Enemy(const string& n, int hp, int atk)
+        : Character(n, hp, atk) {
+    }
+};
+
+class Location {
+private:
+    string name;
+    vector<Enemy> enemies;
+public:
+    Location(const string& n) : name(n) {}
+    void addEnemy(const Enemy& enemy) {
+        enemies.push_back(enemy);
+    }
+    void showEnemies() {
+        cout << "Враги в данной локации:\n";
+        for (size_t i = 0; i < enemies.size(); ++i) {
+            cout << i + 5 << ". " << enemies[i].getName()
+                << " | HP: " << enemies[i].getHP() << "\n";
+        }
+    }
+    Enemy* getEnemy(int index) {
+        if (index >= 0 && index < (int)enemies.size())
+            return &enemies[index];
+        else
+            return 0;
+    }
+    string getName() const { return name; }
+};
+
+
+class Game {
+private:
+    Player player;
+    vector<Location> locations;
+    int currentLocationIndex;
+
+public:
+    Game() : player("Герой"), currentLocationIndex(0) {
+
+        Location loc1("Затерянный лес");
+        loc1.addEnemy(Enemy("Палочный тролль", 30, 5));
+        loc1.addEnemy(Enemy("Деревянный голем", 40, 2));
+        loc1.addEnemy(Enemy("муравей гигант", 25, 5));
+        loc1.addEnemy(Enemy("каменый голем", 80, 4));
+        loc1.addEnemy(Enemy("босс троль", 35, 10));
+
+        Location loc2("Древний замок");
+        loc2.addEnemy(Enemy("Рыцарь-призрак", 60, 10));
+        loc2.addEnemy(Enemy("Демон-защитник", 80, 15));
+        loc2.addEnemy(Enemy("скелет", 35, 7));
+        loc2.addEnemy(Enemy("нежить", 45, 8));
+        loc2.addEnemy(Enemy("Скелет Санс. Санс Скелет", 16, 100));
+
+        locations.push_back(loc1);
+        locations.push_back(loc2);
+    }
+
+    void start() {
+        cout << "Добро пожаловать в текстовую RPG!\n";
+        printMenu();
+        string choice;
+        while (true) {
+            cout << "\nВведите команду (1-7), или 'exit' для выхода:\n";
+            cin >> choice;
+            if (choice == "exit") break;
+            handleCommand(choice);
+        }
+        cout << "Игра завершена.\n";
+    }
+
+    void printMenu() {
+        cout << "--- Главное меню ---\n";
+        cout << "1. Перемещение\n";
+        cout << "2. Посмотреть статус\n";
+        cout << "3. Осмотреть локацию\n";
+        cout << "4. Начать бой\n";
+        cout << "5. Посмотреть инвентарь\n";
+        cout << "6. Посмотреть к прадовцу в лавку\n";
+        cout << "7. Использовать аптечку\n";
+        cout << "8. Выйти из игры\n";
+    }
+
+    void handleCommand(const string& cmd) {
+        if (cmd == "1") {
+            changeLocation();
+        }
+        else if (cmd == "2") {
+            player.printStatus();
+            cout << "Золото: " << player.getGold() << "\n";
+        }
+        else if (cmd == "3") {
+            showLocationDetails();
+        }
+        else if (cmd == "4") {
+            startBattle();
+        }
+        else if (cmd == "5") {
+            player.showInventory();
+        }
+        else if (cmd == "6") {
+            buyItem();
+        }
+        else if (cmd == "7") {
+            player.useHealthPotion();
+        }
+        else if (cmd == "8") {
+            exit(0);
+        }
+        else {
+            cout << "Неверная команда.\n";
+        }
+    }
+
+    void changeLocation() {
+        cout << "Доступные локации:\n";
+        for (size_t i = 0; i < locations.size(); ++i) {
+            cout << i + 1 << ". " << locations[i].getName() << "\n";
+        }
+        int choice;
+        cout << "Выберите номер локации: ";
+        cin >> choice;
+        if (choice > 0 && choice <= (int)locations.size()) {
+            currentLocationIndex = choice - 1;
+            cout << "Вы перешли в " << locations[currentLocationIndex].getName() << ".\n";
+        }
+        else {
+            cout << "Неверный выбор.\n";
+        }
+    }
+
+    void showLocationDetails() {
+        Location& loc = locations[currentLocationIndex];
+        cout << "Вы в " << loc.getName() << ".\n";
+        loc.showEnemies();
+    }
+
+    void startBattle() {
+        Location& loc = locations[currentLocationIndex];
+        loc.showEnemies();
+        int enemyChoice;
+        cout << "Выберите врага для боя (номер): ";
+        cin >> enemyChoice;
+        Enemy* enemy = loc.getEnemy(enemyChoice - 1);
+        if (enemy && enemy->isAlive()) {
+            battle(player, *enemy);
+        }
+        else {
+            cout << "Некорректный выбор врага.\n";
+        }
+    }
+
+    void battle(Player& p, Enemy& e) {
+        cout << "Бой начался!\n";
+        while (p.isAlive() && e.isAlive()) {
+            p.attackTarget(e);
+            if (!e.isAlive()) break;
+            e.attackTarget(p);
+        }
+        if (p.isAlive()) {
+            cout << "Вы победили врага!\n";
+            p.gainGold(25);
+        }
+        else {
+            cout << "Вы проибали...\n";
+        }
+    }
+    void buyItem() {
+        cout << "Магазин:\n";
+        cout << "1. Меч +5 атак (Цена 30 золота)\n";
+        cout << "2. Аптечка (Восстановит 30 HP, Цена 20 золота)\n";
+        int choice;
+        cin >> choice;
+        if (choice == 1) {
+            if (player.getGold() >= 30) {
+                player.spendGold(30);
+                player.inventoryItems.push_back("Меч +5 атак");
+                player.increaseAttack(5);
+            }
+            else {
+                cout << "Недостаточно золота.\n";
+            }
+        }
+        else if (choice == 2) {
+            if (player.getGold() >= 15) {
+                player.spendGold(20);
+                player.inventoryItems.push_back("Аптечка");
+                cout << "Аптечка добавлена в инвентарь.\n";
+            }
+            else {
+                cout << "Недостаточно золота.\n";
+            }
+        }
+        else {
+            cout << "Некорректный выбор.\n";
+        }
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "");
+    srand(time(0));
+    Game game;
+    game.start();
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
