@@ -24,13 +24,13 @@ public:
     }
 
     int getXPForNextLevel() const {
-        return level * 50;
+        return level * 20;
     }
 
     void levelUp() {
         level++;
         hp = 100 + (level - 1) * 20;
-        attack += 3;
+        attack += 4;
         cout << name << " достиг уровня " << level << "! Уровень увеличен.\n";
         cout << "HP: " << hp << ", ДМГ: " << attack << "\n";
     }
