@@ -9,10 +9,31 @@ protected:
     string name;
     int hp;
     int attack;
+    int level;
+    int xp;
 public:
-    Character(const string& n, int h, int a) : name(n), hp(h), attack(a) {}
+    Character(const string& n, int h, int a) : name(n), hp(h), attack(a), level(1), xp(0) {}
 
     virtual ~Character() {}
+
+    void gainXP(int amount) {
+        xp += amount;
+        while (xp >= getXPForNextLevel()) {
+            levelUp();
+        }
+    }
+
+    int getXPForNextLevel() const {
+        return level * 50;
+    }
+
+    void levelUp() {
+        level++;
+        hp = 100 + (level - 1) * 20;
+        attack += 3;
+        cout << name << " достиг уровня " << level << "! Уровень увеличен.\n";
+        cout << "HP: " << hp << ", ДМГ: " << attack << "\n";
+    }
 
     void takeDamage(int dmg) {
         hp -= dmg;
@@ -25,7 +46,7 @@ public:
     int getAttack() const { return attack; }
     void heal(int amount) {}
     void printStatus() const {
-        cout << name << hp << " | хп: " << " | дмг: " << attack << "\n";
+        cout << name << " | Уровень: " << level << " | HP: " << hp << " | ДМГ: " << attack << "\n";
     }
 
     virtual void attackTarget(Character& target) {
@@ -273,8 +294,10 @@ public:
         }
         if (p.isAlive()) {
             cout << "Вы победили врага!\n";
-            p.gainGold(25);
-        }
+                p.gainGold(25);
+                p.gainXP(20);
+            }
+        
         else {
             cout << "Вы проибали...\n";
         }
