@@ -24,7 +24,7 @@ public:
     }
 
     int getXPForNextLevel() const {
-        return level * 20;
+        return level * 45;
     }
 
     void levelUp() {
