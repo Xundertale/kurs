@@ -138,10 +138,37 @@ public:
         loc2.addEnemy(Enemy("скелет", 35, 7));
         loc2.addEnemy(Enemy("нежить", 45, 8));
         loc2.addEnemy(Enemy("Скелет Санс. Санс Скелет", 16, 100));
+        loc2.addEnemy(Enemy("Стражи бездны", 70, 14));
+        loc2.addEnemy(Enemy("Дух-загадка", 55, 13));
+
+        Location loc3("Вулканическая пещера");
+        loc3.addEnemy(Enemy("Огненный элементаль", 45, 9));
+        loc3.addEnemy(Enemy("Лавовый гремучий дракон", 120, 20));
+        loc3.addEnemy(Enemy("Магма-существо", 60, 12));
+        loc3.addEnemy(Enemy("Пылающий голем", 80, 15));
+        loc3.addEnemy(Enemy("Коварный огненный духовник", 50, 16));
+
+        Location loc4("Облачные вершины");
+        loc4.addEnemy(Enemy("Вьючный грифон", 70, 14));
+        loc4.addEnemy(Enemy("Облачный дракон", 150, 25));
+        loc4.addEnemy(Enemy("Громоносец", 90, 18));
+        loc4.addEnemy(Enemy("Небесный страж", 80, 16));
+        loc4.addEnemy(Enemy("Тень урагана", 55, 19));
+
+        Location loc5("Город слез");
+        loc5.addEnemy(Enemy("Плачущий хаос", 70, 17));
+        loc5.addEnemy(Enemy("Призрак плачющего мира", 60, 14));
+        loc5.addEnemy(Enemy("Коралловый монстр", 50, 10));
+        loc5.addEnemy(Enemy("Глубинный тролль", 80, 20));
+        loc5.addEnemy(Enemy("Владыка плачущих глубин", 200, 30));
 
         locations.push_back(loc1);
         locations.push_back(loc2);
+        locations.push_back(loc3);
+        locations.push_back(loc4);
+        locations.push_back(loc5);
     }
+
 
     void start() {
         cout << "Добро пожаловать в текстовую RPG!\n";
