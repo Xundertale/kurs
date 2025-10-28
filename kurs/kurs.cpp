@@ -24,7 +24,7 @@ public:
     }
 
     int getXPForNextLevel() const {
-        return level * 45;
+        return level * 30;
     }
 
     void levelUp() {
@@ -158,7 +158,7 @@ public:
         loc2.addEnemy(Enemy("Демон-защитник", 80, 15));
         loc2.addEnemy(Enemy("скелет", 35, 7));
         loc2.addEnemy(Enemy("нежить", 45, 8));
-        loc2.addEnemy(Enemy("Скелет Санс. Санс Скелет", 16, 100));
+        loc2.addEnemy(Enemy("Скелет Санс. Санс Скелет", 16, 99));
         loc2.addEnemy(Enemy("Стражи бездны", 70, 14));
         loc2.addEnemy(Enemy("Дух-загадка", 55, 13));
 
@@ -211,7 +211,7 @@ public:
         cout << "3. Осмотреть локацию\n";
         cout << "4. Начать бой\n";
         cout << "5. Посмотреть инвентарь\n";
-        cout << "6. Посмотреть к прадовцу в лавку\n";
+        cout << "6. Зайти к прадовцу в лавку\n";
         cout << "7. Использовать аптечку\n";
         cout << "8. Выйти из игры\n";
     }
@@ -299,7 +299,7 @@ public:
             }
         
         else {
-            cout << "Вы проибали...\n";
+            cout << "Вы проIбали...\n";
         }
     }
     void buyItem() {
