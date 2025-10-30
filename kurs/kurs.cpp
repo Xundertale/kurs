@@ -11,8 +11,10 @@ protected:
     int attack;
     int level;
     int xp;
+    int armor;
+
 public:
-    Character(const string& n, int h, int a) : name(n), hp(h), attack(a), level(1), xp(0) {}
+    Character(const string& n, int h, int a): name(n), hp(h), attack(a), level(1), xp(0), armor(0) {}
 
     virtual ~Character() {}
 
@@ -23,8 +25,8 @@ public:
             xp -= xpForNextLevel;
             level++;
 
-            hp = 100 + (level - 1) * 15;
-            attack += 5;
+            hp = 100 + (level - 1) * 20;
+            attack += 7;
             cout << name << " достиг уровня " << level << "! Статы повышены.\n";
             xpForNextLevel = level * 30;
         }
@@ -39,9 +41,11 @@ public:
    
 
     void takeDamage(int dmg) {
-        hp -= dmg;
+        int damageTaken = dmg - armor;
+        if (damageTaken < 0) damageTaken = 0;
+        hp -= damageTaken;
         if (hp < 0) hp = 0;
-        cout << name << " получил " << dmg << " урона! Осталось HP: " << hp << "\n";
+        cout << name << " получил " << damageTaken << " Осталось HP: " << hp << "\n";
     }
     bool isAlive() const { return hp > 0; }
     string getName() const { return name; }
@@ -53,14 +57,17 @@ public:
 
     void printStatus() const {
         cout << name << " | Уровень: " << level << " | HP: " << hp << " | ДМГ: " << attack
-            << " | XP: " << xp << "/" << level * 30 << "\n";
+            << " | XP: " << xp << "/" << level * 30 <<" | Броня: "<< armor << "\n";
     }
 
     virtual void attackTarget(Character& target) {
         cout << name << " атакует " << target.getName() << "!\n";
         target.takeDamage(attack);
     }
-
+    void increaseArmor(int amount) {
+        armor += amount;
+        cout << name << "'s броня увеличена на " << amount << ". Общий защита: " << armor << "\n";
+    }
 };
 
 
@@ -299,10 +306,10 @@ public:
         }
         if (p.isAlive()) {
             cout << "Вы победили врага!\n";
-                p.gainGold(25);
-                p.gainXP(20);
-            }
-        
+            p.gainGold(25);
+            p.gainXP(20);
+        }
+
         else {
             cout << "Вы проIбали...\n";
         }
@@ -311,6 +318,7 @@ public:
         cout << "Магазин:\n";
         cout << "1. Эссенция война +6 к атаке (Цена 35 золота)\n";
         cout << "2. Аптечка (Восстановит 30 HP, Цена 20 золота)\n";
+        cout << "3. Броня +30 к защите(Цена 50 золота)\n";
         int choice;
         cin >> choice;
         if (choice == 1) {
@@ -336,9 +344,18 @@ public:
         else {
             cout << "Некорректный выбор.\n";
         }
+        if (choice == 3) {
+            if (player.getGold() >= 1) {
+                player.spendGold(1);
+                player.increaseArmor(5);
+                cout << "Броня +30 экипирована.\n";
+            }
+            else {
+                cout << "Недостаточно золота.\n";
+            }
+        }
     }
 };
-
 int main() {
     setlocale(LC_ALL, "");
     srand(time(0));
