@@ -18,26 +18,25 @@ public:
 
     void gainXP(int amount) {
         xp += amount;
-        while (xp >= getXPForNextLevel()) {
-            levelUp();
+        int xpForNextLevel = level * 30;
+        while (xp >= xpForNextLevel) {
+            xp -= xpForNextLevel;
+            level++;
+
+            hp = 100 + (level - 1) * 15;
+            attack += 5;
+            cout << name << " достиг уровня " << level << "! Статы повышены.\n";
+            xpForNextLevel = level * 30;
         }
     }
 
-    int getXPForNextLevel() const {
-        return level * 30;
-    }
+ 
     void increaseAttack(int amount) {
         attack += amount;
         cout << name << " атака увеличена на " << amount << " Текущий урон: " << attack << "\n";
     }
 
-    void levelUp() {
-        level++;
-        hp = 100 + (level - 1) * 20;
-        attack += 4;
-        cout << name << " достиг уровня " << level << "! Уровень увеличен.\n";
-        cout << "HP: " << hp << ", ДМГ: " << attack << "\n";
-    }
+   
 
     void takeDamage(int dmg) {
         hp -= dmg;
@@ -49,8 +48,12 @@ public:
     int getHP() const { return hp; }
     int getAttack() const { return attack; }
     void heal(int amount) {}
+
+
+
     void printStatus() const {
-        cout << name << " | Уровень: " << level << " | HP: " << hp << " | ДМГ: " << attack << "\n";
+        cout << name << " | Уровень: " << level << " | HP: " << hp << " | ДМГ: " << attack
+            << " | XP: " << xp << "/" << level * 30 << "\n";
     }
 
     virtual void attackTarget(Character& target) {
