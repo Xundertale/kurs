@@ -26,6 +26,10 @@ public:
     int getXPForNextLevel() const {
         return level * 30;
     }
+    void increaseAttack(int amount) {
+        attack += amount;
+        cout << name << " атака увеличена на " << amount << "! Текущий урон: " << attack << "\n";
+    }
 
     void levelUp() {
         level++;
@@ -54,9 +58,6 @@ public:
         target.takeDamage(attack);
     }
 
-    void increaseAttack(int amount) {
-        cout << name << " атака увеличена на " << amount << "! Текущий урон: " << attack << "\n";
-    }
 };
 
 
@@ -101,6 +102,7 @@ public:
         else {
             cout << "У вас нет аптечки.\n";
         }
+
     }
 };
 
@@ -311,8 +313,8 @@ public:
         if (choice == 1) {
             if (player.getGold() >= 30) {
                 player.spendGold(30);
-                player.inventoryItems.push_back("Меч +5 атак");
                 player.increaseAttack(5);
+                player.inventoryItems.push_back("Меч +5 атак");
             }
             else {
                 cout << "Недостаточно золота.\n";
