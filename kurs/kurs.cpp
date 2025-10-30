@@ -28,7 +28,7 @@ public:
     }
     void increaseAttack(int amount) {
         attack += amount;
-        cout << name << " атака увеличена на " << amount << "! Текущий урон: " << attack << "\n";
+        cout << name << " атака увеличена на " << amount << " Текущий урон: " << attack << "\n";
     }
 
     void levelUp() {
@@ -306,15 +306,15 @@ public:
     }
     void buyItem() {
         cout << "Магазин:\n";
-        cout << "1. Меч +5 атак (Цена 30 золота)\n";
+        cout << "1. Эссенция война +6 к атаке (Цена 35 золота)\n";
         cout << "2. Аптечка (Восстановит 30 HP, Цена 20 золота)\n";
         int choice;
         cin >> choice;
         if (choice == 1) {
             if (player.getGold() >= 30) {
                 player.spendGold(30);
-                player.increaseAttack(5);
-                player.inventoryItems.push_back("Меч +5 атак");
+                player.increaseAttack(6);
+                player.inventoryItems.push_back("Эссенция война +6 к атаке");
             }
             else {
                 cout << "Недостаточно золота.\n";
